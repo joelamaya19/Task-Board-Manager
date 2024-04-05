@@ -5,7 +5,6 @@ const taskDateInput = $('#taskDueDate');
 const taskDescInput = $('#taskDesc');
 
 
-// Todo: create a function to create a task card
 function createTaskCard(task) {
     const taskCard = $('<div>').addClass('card task-card draggable m-2').attr('data-task-id', task.id);
     const cardHeader = $('<div>').addClass('card-header h4').text('Task: ' + task.title);
@@ -33,7 +32,7 @@ function createTaskCard(task) {
 
 }
 
-// Todo: create a function to render the task list and make cards draggable
+
 function renderTaskList() {
    const tasks = taskList;
 
@@ -75,7 +74,7 @@ function renderTaskList() {
 
 }
 
-// Todo: create a function to handle adding a new task
+
 function handleAddTask(event){
     event.preventDefault();
 
@@ -103,27 +102,30 @@ function handleAddTask(event){
     $('#formModal').modal('hide');
 }
 
-// Todo: create a function to handle deleting a task
+
 function handleDeleteTask(event){
     const taskId = $(this).attr('data-task-id');
+    
     taskList = taskList.filter(task => task.id != taskId);
     localStorage.setItem('tasks', JSON.stringify(taskList));
      
     renderTaskList();
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
+
 function handleDrop(event, ui) {
     const taskId = ui.draggable.attr('data-task-id');
     const newStatus = event.target.id;
     const taskIndex = taskList.findIndex(task => task.id == taskId);
+
     taskList[taskIndex].status = newStatus;
     localStorage.setItem("tasks", JSON.stringify(taskList));
+
     renderTaskList();
 }
 
 
-// Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+
 $(document).ready(function () {
     renderTaskList();
 
