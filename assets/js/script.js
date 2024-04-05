@@ -24,16 +24,64 @@ function createTaskCard(task) {
     const cardDueDate = $('<p>').addClass('card-text').text('Due Date: ' + task.dueDate);
     const cardDeleteBtn = $('<button>').addClass('btn btn-danger delete').text('Delete').attr('data-task-id', task.id);
 
-    taskCard.append(cardHeader, cardBody.append(cardDesc, cardDueDate), cardDeleteBtn);
+    
+    if (task.dueDate && task.status !== 'done') {
+        const now = dayjs();
+        const taskDueDate = dayjs(task.dueDate, 'MM/DD/YYYY');
+        
+        if (now.isSame(taskDueDate, 'day')){
+            taskCard.addClass('bg-warning text-white');
+        } else if (now.isAfter(taskDueDate)){
+            taskCard.addClass('bg-danger text-white');
+            cardDeleteBtn.addClass('border-light');
+        }
+    }
+    cardBody.append(cardDesc, cardDueDate, cardDeleteBtn);
+    taskCard.append(cardHeader, cardBody);
+
     return taskCard;
 
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
-    $('to-do-list').empty();
-    $('in-progress-list').empty();
-    $('done-list').empty();
+   const tasks = taskList;
+
+   const todoList = $('#to-do-list');
+   todoList.empty();
+
+   const inProgressList = $('#in-progress-list');
+   inProgressList.empty();
+
+   const doneList = $('#done-list');
+
+   for (let task of tasks) {
+    if (task.status === 'to-do'){
+        todoList.append(createTaskCard(task));
+    } else if (task.status === 'in-progress'){
+        inProgressList.append(createTaskCard(task));
+    } else if (task.status === 'done'){
+        doneList.append(createTaskCard(task));
+    }
+   }
+
+    // Use JQuery UI to make task cards draggable
+  $('.draggable').draggable({
+    opacity: 0.7,
+    zIndex: 100,
+    // This is the function that creates the clone of the card that is dragged. This is purely visual and does not affect the data.
+    helper: function (e) {
+      // Check if the target of the drag event is the card itself or a child element. If it is the card itself, clone it, otherwise find the parent card  that is draggable and clone that.
+      const original = $(e.target).hasClass('ui-draggable')
+        ? $(e.target)
+        : $(e.target).closest('.ui-draggable');
+      // Return the clone with the width set to the width of the original card. This is so the clone does not take up the entire width of the lane. This is to also fix a visual bug where the card shrinks as it's dragged to the right.
+      return original.clone().css({
+        width: original.outerWidth(),
+      });
+    },
+  });
+
 }
 
 // Todo: create a function to handle adding a new task
@@ -45,7 +93,7 @@ function handleAddTask(event){
     const taskDesc = taskDescInput.val();
 
     const newTask = {
-        id: crypto.randomUUID(),
+        id: generateTaskId(),
         title: taskTitle,
         description: taskDesc,
         dueDate: taskDate,
