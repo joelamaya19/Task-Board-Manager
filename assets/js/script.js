@@ -7,15 +7,12 @@ const taskDescInput = $('#taskDesc');
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
-        const taskId = nextId++; 
-        localStorage.setItem('nextId', JSON.stringify(nextId));
-
-    return taskId;
+    return crypto.randomUUID();
 }
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
-    const taskCard = $('<div>').addClass('card task-card draggable').attr('data-task-id', task.id);
+    const taskCard = $('<div>').addClass('card task-card draggable m-2').attr('data-task-id', task.id);
     const cardHeader = $('<div>').addClass('card-header h4').text('Task: ' + task.title);
     const cardBody = $('<div>').addClass('card-body');
     const cardDesc = $('<p>').addClass('card-text').text('Description: ' + task.description);
@@ -104,7 +101,6 @@ function handleAddTask(event){
 
     renderTaskList();
     
-
     taskTitleInput.val('');
     taskDateInput.val('');
     taskDescInput.val('');
@@ -117,9 +113,6 @@ function handleDeleteTask(event){
     const taskId = $(this).attr('data-task-id');
     taskList = taskList.filter(task => task.id != taskId);
     localStorage.setItem('tasks', JSON.stringify(taskList));
-
-    nextId--; 
-    localStorage.setItem('nextId', JSON.stringify(nextId));
      
     renderTaskList();
 }
